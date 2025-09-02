@@ -18,7 +18,7 @@ app.use(cors());
 app.use(express.json());
 
 // Routes
-app.use("/api/symptoms", symptomRoutes);
+app.use("/api/symptom", symptomRoutes);
 app.use("/api/recommendations", recommendationRoutes);
 app.use("/api/mapping", mappingRoutes);
 
