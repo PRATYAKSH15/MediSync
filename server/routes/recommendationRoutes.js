@@ -3,7 +3,7 @@ import Recommendation from "../models/Recommendation.js";
 
 const router = express.Router();
 
-// Seed example
+// Seed example--> just done in initial for testing
 router.post("/seed", async (req, res) => {
   const sample = new Recommendation({
     symptom: "fever",

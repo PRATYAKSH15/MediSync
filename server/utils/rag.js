@@ -2,10 +2,9 @@ import { ChatOpenAI } from "@langchain/openai";
 import { RetrievalQAChain } from "langchain/chains";
 import { vectorStore } from "./vectorStore.js";
 
-// Setup LLM
 const model = new ChatOpenAI({
   apiKey: process.env.OPENAI_API_KEY,
-  modelName: "gpt-4o-mini", // lightweight + fast
+  modelName: "gpt-4o-mini",
   temperature: 0.2,
 });
 

@@ -1,15 +1,14 @@
 import express from "express";
 import { RetrievalQAChain } from "langchain/chains";
-import { ChatOpenAI } from "@langchain/openai"; // ✅ LangChain wrapper
+import { ChatOpenAI } from "@langchain/openai";
 import { searchPubMed, fetchPubMedDetails } from "../utils/pubmed.js";
 import SymptomMapping from "../models/SymptomMapping.js";
 import { Client } from "@googlemaps/google-maps-services-js";
-import { vectorStore } from "../utils/vectorStore.js"; // ✅ use the shared vectorStore
+import { vectorStore } from "../utils/vectorStore.js";
 
 const router = express.Router();
 const client = new Client({});
 
-// ✅ Utility: Ask OpenAI which doctor to consult
 async function getDoctorSpecialty(symptom) {
   const llm = new ChatOpenAI({
     modelName: "gpt-4o-mini",
@@ -34,7 +33,6 @@ async function getDoctorSpecialty(symptom) {
   return response.content.trim();
 }
 
-// ✅ Main symptom route
 router.post("/", async (req, res) => {
   try {
     const { symptom, lat, lng } = req.body;
@@ -42,13 +40,11 @@ router.post("/", async (req, res) => {
       return res.status(400).json({ error: "Symptom is required" });
     }
 
-    // -------------------------------
     // 1. PubMed + LangChain Summarizer
-    // -------------------------------
     const ids = await searchPubMed(symptom);
     const pubmedDocs = await fetchPubMedDetails(ids);
 
-    // ✅ Add docs to existing vectorStore
+    //Add docs to existing vectorStore
     await vectorStore.addDocuments(
       pubmedDocs.map((doc) => ({
         pageContent: doc.content,
@@ -79,7 +75,7 @@ router.post("/", async (req, res) => {
          }`,
     });
 
-    // Try parsing it as JSON
+    // Try to parse structured JSON, else fallback to plain text
     let structuredSummary = { causes: "", prevention: "", treatment: "" };
     try {
       structuredSummary = JSON.parse(pubmedAnswer.text);
@@ -94,9 +90,7 @@ router.post("/", async (req, res) => {
       };
     }
 
-    // -------------------------------
     // 2. Doctor Mapping + Google Maps
-    // -------------------------------
     let mapping = await SymptomMapping.findOne({
       symptom: new RegExp(symptom, "i"),
     });
@@ -129,9 +123,7 @@ router.post("/", async (req, res) => {
       }));
     }
 
-    // -------------------------------
     // Final Response
-    // -------------------------------
     res.json({
       symptom,
       pubmedSummary: pubmedAnswer.text,

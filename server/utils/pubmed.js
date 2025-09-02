@@ -1,9 +1,6 @@
 import axios from "axios";
 import { parseStringPromise } from "xml2js";
 
-/**
- * Search PubMed for articles by symptom/query
- */
 export const searchPubMed = async (query) => {
   try {
     const url = `https://eutils.ncbi.nlm.nih.gov/entrez/eutils/esearch.fcgi`;
@@ -18,15 +15,11 @@ export const searchPubMed = async (query) => {
 
     return res.data?.esearchresult?.idlist || [];
   } catch (err) {
-    console.error("❌ PubMed search error:", err.message);
+    console.error("PubMed search error:", err.message);
     return [];
   }
 };
 
-/**
- * Fetch details of PubMed articles by IDs
- * Converts XML -> JSON -> { pmid, title, abstract, content }
- */
 export const fetchPubMedDetails = async (idList) => {
   if (!idList || !idList.length) return [];
 

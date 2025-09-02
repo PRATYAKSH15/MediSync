@@ -8,7 +8,6 @@ dotenv.config();
 const client = new MongoClient(process.env.MONGO_URI);
 await client.connect();
 
-// ✅ use exact same DB name as in Atlas
 const db = client.db("MediSync"); 
 const collection = db.collection("pubmed_articles");
 
@@ -18,7 +17,7 @@ export const vectorStore = new MongoDBAtlasVectorSearch(
   }),
   {
     collection,
-    indexName: "pubmed_vector_index", // must match Atlas index name
+    indexName: "pubmed_vector_index",
     textKey: "pageContent",
     embeddingKey: "embedding",
   }
